@@ -15,7 +15,11 @@ import { RedisService } from '../redis/redis.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { RequireLogin, UserInfo } from 'src/custom.decorator';
+import {
+  RequireLogin,
+  RequirePermission,
+  UserInfo,
+} from 'src/custom.decorator';
 import { UserDetailVo } from './vo/user-info.vo';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -188,6 +192,7 @@ export class UserController {
 
   /**冻结用户 */
   @Get('freeze')
+  @RequireLogin()
   async freeze(@Query('id') userId: number) {
     await this.userService.freezeUserById(userId);
     return 'success';
@@ -195,6 +200,8 @@ export class UserController {
 
   /**用户列表 */
   @Get('list')
+  @RequireLogin()
+  @RequirePermission('user_list')
   async list(
     @Query('pageNo', new DefaultValuePipe(1), generateParseIntPipe('pageNo'))
     pageNo: number,
@@ -219,6 +226,7 @@ export class UserController {
 
   /**删除用户 */
   @Get('delete')
+  @RequireLogin()
   async delete(@Query('id') userId: number) {
     await this.userService.delete(userId);
     return 'success';

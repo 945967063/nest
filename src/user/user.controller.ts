@@ -155,12 +155,8 @@ export class UserController {
 
   /**修改M密码 */
   @Post(['update_password'])
-  @RequireLogin()
-  async updatePassword(
-    @UserInfo('userId') userId: number,
-    @Body() passwordDto: UpdateUserPasswordDto,
-  ) {
-    return await this.userService.updatePassword(userId, passwordDto);
+  async updatePassword(@Body() passwordDto: UpdateUserPasswordDto) {
+    return await this.userService.updatePassword(passwordDto);
   }
   /**更新密码获取验证码 */
   @Get('update_password/captcha')

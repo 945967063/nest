@@ -158,7 +158,7 @@ export class UserService {
     return user;
   }
 
-  async updatePassword(userId: number, passwordDto: UpdateUserPasswordDto) {
+  async updatePassword(passwordDto: UpdateUserPasswordDto) {
     const captcha = await this.redisService.get(
       `update_password_captcha_${passwordDto.email}`,
     );
@@ -172,7 +172,7 @@ export class UserService {
     }
 
     const foundUser = await this.userRepository.findOneBy({
-      id: userId,
+      userName: passwordDto.userName,
     });
 
     foundUser.passWord = md5(passwordDto.password);

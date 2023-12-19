@@ -50,10 +50,6 @@ export class UserService {
       throw new HttpException('用户名已存在', HttpStatus.BAD_REQUEST);
     }
 
-    if (foundUser.email === user.email) {
-      throw new HttpException('邮箱已被注册', HttpStatus.BAD_REQUEST);
-    }
-
     const newUser = new User();
     newUser.userName = user.userName;
     newUser.passWord = md5(user.passWord);
@@ -76,10 +72,7 @@ export class UserService {
 
     try {
       await this.userRepository.save(newUser);
-      return {
-        code: 200,
-        message: '注册成功',
-      };
+      return '注册成功';
     } catch (error) {
       this.logger.error(error, UserService);
       return '注册失败';

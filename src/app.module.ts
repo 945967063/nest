@@ -24,7 +24,7 @@ import { PermissionGuard } from './permission.guard';
             expiresIn: '30m',
           },
         };
-      }
+      },
     }),
     ConfigModule.forRoot({
       isGlobal: true,
@@ -45,7 +45,7 @@ import { PermissionGuard } from './permission.guard';
           poolSize: 10,
           connectorPackage: 'mysql2',
         };
-      }
+      },
     }),
     UserModule,
     RedisModule,

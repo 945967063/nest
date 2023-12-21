@@ -8,7 +8,7 @@ import {
   JoinTable,
 } from 'typeorm';
 import { Role } from './role.entity';
-@Entity({ name: 'users' })
+@Entity()
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -57,9 +57,7 @@ export class User {
   @UpdateDateColumn()
   updateTime: Date;
 
-  @ManyToMany(() => Role)
-  @JoinTable({
-    name: 'user_roles',
-  })
+  @ManyToMany(() => Role, (role) => role.users)
+  @JoinTable()
   roles: Role[];
 }

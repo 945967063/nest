@@ -73,8 +73,7 @@ export class UserController {
         permissions: vo.userInfo.permissions,
       },
       {
-        expiresIn:
-          this.configService.get('jwt_access_token_expires_time') || '30m',
+        expiresIn: '60m',
       },
     );
 
@@ -83,8 +82,7 @@ export class UserController {
         userId: vo.userInfo.id,
       },
       {
-        expiresIn:
-          this.configService.get('jwt_refresh_token_expres_time') || '7d',
+        expiresIn: '7d',
       },
     );
 
@@ -92,13 +90,13 @@ export class UserController {
   }
 
   @Get('refresh')
-  async refresh(@Query('refreshToken') refreshToken: string) {
+  async refresh(@Query('refresh') refresh: string) {
     try {
-      const data = this.jwtService.verify(refreshToken);
+      const data = this.jwtService.verify(refresh);
 
       const user = await this.userService.findUserById(data.userId, false);
 
-      const access_token = this.jwtService.sign(
+      const accessToken = this.jwtService.sign(
         {
           userId: user.id,
           username: user.username,
@@ -106,28 +104,22 @@ export class UserController {
           permissions: user.permissions,
         },
         {
-          expiresIn:
-            this.configService.get('jwt_access_token_expires_time') || '30m',
+          expiresIn: '60m',
         },
       );
 
-      const refresh_token = this.jwtService.sign(
+      const refreshToken = this.jwtService.sign(
         {
           userId: user.id,
         },
         {
-          expiresIn:
-            this.configService.get('jwt_refresh_token_expres_time') || '7d',
+          expiresIn: '7d',
         },
       );
 
       return {
-        data: {
-          access_token,
-          refresh_token,
-        },
-        code: 200,
-        message: '刷新成功',
+        accessToken,
+        refreshToken,
       };
     } catch (e) {
       throw new UnauthorizedException('token 已失效，请重新登录');
@@ -225,6 +217,16 @@ export class UserController {
   @RequireLogin()
   async delete(@Query('id') userId: number) {
     await this.userService.delete(userId);
+    return 'success';
+  }
+
+  /**添加权限 */
+  @Post('add_permission')
+  @RequireLogin()
+  async addPermission(
+    @Body() { code, description }: { code: string; description: string },
+  ) {
+    await this.userService.addPermission(code, description);
     return 'success';
   }
 }

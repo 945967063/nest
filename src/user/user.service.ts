@@ -62,12 +62,6 @@ export class UserService {
       },
       relations: ['permissions'],
     });
-    const defaultPermissions = await this.permissionRepository.find({
-      where: {
-        description: '普通用户',
-      },
-    });
-    defaultRole.permissions = defaultPermissions;
     newUser.roles = [defaultRole];
 
     try {
@@ -87,6 +81,7 @@ export class UserService {
       },
       relations: ['roles', 'roles.permissions'],
     });
+    console.log(user, '222');
 
     if (!user) {
       throw new HttpException('用户名不存在', HttpStatus.BAD_REQUEST);
@@ -278,6 +273,38 @@ export class UserService {
     } catch (e) {
       this.logger.error(e, UserService);
       return '删除失败';
+    }
+  }
+
+  async addPermission(code: string, description: string) {
+    console.log(code, description);
+    //查询是否已存在
+    const foundPermission = await this.permissionRepository.findOne({
+      where: {
+        code,
+      },
+    });
+    if (foundPermission) {
+      throw new HttpException('权限已存在', HttpStatus.BAD_REQUEST);
+    }
+
+    const permission = new Permission();
+    permission.code = code;
+    permission.description = description;
+    const defaultRole = await this.roleRepository.findOne({
+      where: {
+        name: '普通用户',
+      },
+      relations: ['permissions'],
+    });
+    permission.roles = [defaultRole];
+
+    try {
+      await this.permissionRepository.save(permission);
+      return '添加成功';
+    } catch (e) {
+      this.logger.error(e, UserService);
+      return '添加失败';
     }
   }
 }
